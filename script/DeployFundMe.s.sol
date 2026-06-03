@@ -10,7 +10,7 @@ contract DeployFundMe is Script {
 
     function run() external returns (FundMe) {
         HelperConfig helperConfig = new HelperConfig();
-        address ethUsdPriceFeed = helperConfig.activeNetworkConfig();
+        address ethUsdPriceFeed = helperConfig.activeNetworkConfig(); // may dont use (a , b, ...) = {} so only one field in struct
 
         vm.startBroadcast();
         fundMe = new FundMe(ethUsdPriceFeed);
