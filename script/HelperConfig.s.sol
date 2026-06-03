@@ -29,9 +29,7 @@ contract HelperConfig is Script {
 
     function SepoliaEthConfig() public pure returns (NetworkConfig memory) {
         // price feed address of Sepolia Eth / USD
-        NetworkConfig memory sepoliaConfig = NetworkConfig({
-            s_priceFeed: 0x694AA1769357215DE4FAC081bf1f309aDC325306
-        });
+        NetworkConfig memory sepoliaConfig = NetworkConfig({s_priceFeed: 0x694AA1769357215DE4FAC081bf1f309aDC325306});
         return sepoliaConfig;
     }
 
@@ -44,15 +42,10 @@ contract HelperConfig is Script {
         }
 
         vm.startBroadcast();
-        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(
-            DECIMAL,
-            INITIAL_ANSWER
-        );
+        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(DECIMAL, INITIAL_ANSWER);
         vm.stopBroadcast();
 
-        NetworkConfig memory anvilConfig = NetworkConfig({
-            s_priceFeed: address(mockPriceFeed)
-        });
+        NetworkConfig memory anvilConfig = NetworkConfig({s_priceFeed: address(mockPriceFeed)});
 
         return anvilConfig;
     }
