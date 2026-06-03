@@ -11,6 +11,7 @@ contract FundeMeTest is Test {
     address USER = makeAddr("user");
     uint256 SEND_VALUE = 0.01 ether;
     uint256 STARTING_BALANCE = 100 ether;
+    uint GAS_PRICE = 1;
 
     function setUp() external {
         DeployFundMe deployFundMe = new DeployFundMe();
@@ -23,8 +24,8 @@ contract FundeMeTest is Test {
     }
 
     function testOwnerIsMsgSender() public view {
-        assertEq(fundMe.i_owner(), msg.sender);
-        console.log("Owner address:", fundMe.i_owner());
+        assertEq(fundMe.getOwner(), msg.sender);
+        console.log("Owner address:", fundMe.getOwner());
     }
 
     function testVersion() public view {
@@ -60,9 +61,30 @@ contract FundeMeTest is Test {
         console.log("Funder added to array:", funder);
     }
 
-    function onlyOwnerCanWithdraw() public fund {
+    function testonlyOwnerCanWithdraw() public fund {
         vm.expectRevert();
         vm.prank(USER);
         fundMe.withdraw();
+    }
+
+    function testWithdrawWithASingleFunder() public fund {
+        uint256 startingOwnerBalance = fundMe.getOwner().balance;
+        uint256 startingFundMeBalance = address(fundMe).balance;
+
+        uint256 gasStart = gasleft();
+        vm.txGasPrice(GAS_PRICE);
+        vm.prank(fundMe.getOwner());
+        fundMe.withdraw();
+        uint256 gasEnd = gasleft();
+        uint256 gasUsed = gasStart - gasEnd * GAS_PRICE;
+        console.log("Gas used:", gasUsed);
+
+        uint256 endingOwnerBalance = fundMe.getOwner().balance;
+        uint256 endingFundMeBalance = address(fundMe).balance;
+        assertEq(endingFundMeBalance, 0);
+        assertEq(
+            startingOwnerBalance + startingFundMeBalance,
+            endingOwnerBalance
+        );
     }
 }
